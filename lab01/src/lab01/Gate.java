@@ -1,11 +1,30 @@
+package lab01;
 import java.io.Serializable;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
+import java.rmi.server.UnicastRemoteObject;
 import java.util.Date;
 
-public class Gate implements IGate, Serializable {
+public class Gate extends UnicastRemoteObject implements IGate, Serializable {
+	public static interface ICallbackAction {
+		void doAction();
+	}
+	
+	private ICallbackAction _objICallbackActionShutdown;	
+	public void setShutdownCallbackAction(ICallbackAction objICallbackAction) {
+		this._objICallbackActionShutdown = objICallbackAction;
+	}
+	
+	protected Gate() throws RemoteException {
+		super();
+		this._bIsRunning = true;		
+		this._nEntryCount = 0;
+		this._nExitCount = 0;
+	}
+
+	private static final long serialVersionUID = 1L;
 	private int _nID;
 	private int _nEntryCount;
 	private int _nExitCount;
@@ -18,8 +37,14 @@ public class Gate implements IGate, Serializable {
 	}
 
 	@Override
-	public boolean shutdown() throws RemoteException {
+	public boolean shutdown() throws RemoteException {		
+		_objICenter.removeGate(_nID);
 		this._bIsRunning = false;
+		
+		if(_objICallbackActionShutdown != null) {
+			_objICallbackActionShutdown.doAction();
+		}
+		
 		return true;
 	}
 
@@ -35,20 +60,32 @@ public class Gate implements IGate, Serializable {
 	public void incremenetEntryCount() {
 		if(this._bIsRunning) {
 			this._nEntryCount++;
+			try {
+				this._objICenter.notifyChanges();
+			} catch (RemoteException e) {
+				e.printStackTrace();
+			}
 		}
 	}
 	
-	public int getEntryCount() {
+	@Override
+	public int getEntryCount() throws RemoteException {
 		return this._nEntryCount;
 	}
 	
 	public void incremenetExitCount() {
 		if(this._bIsRunning) {
 			this._nExitCount++;
+			try {
+				this._objICenter.notifyChanges();
+			} catch (RemoteException e) {
+				e.printStackTrace();
+			}
 		}
 	}
 	
-	public int getExitCount() {
+	@Override
+	public int getExitCount() throws RemoteException {
 		return this._nExitCount;
 	}
 	
@@ -58,14 +95,7 @@ public class Gate implements IGate, Serializable {
 	
 	public boolean getIsRunning() {
 		return this._bIsRunning;
-	}		
-	
-	public Gate(int nID, boolean bIsRunning) {
-		this._nID = nID;
-		this._bIsRunning = bIsRunning;		
-		this._nEntryCount = 0;
-		this._nExitCount = 0;
-	}
+	}	
 	
 	private boolean setCenter() {
 		try {
@@ -80,19 +110,24 @@ public class Gate implements IGate, Serializable {
 		return false;
 	}
 	
-	private void register() {
-		try {
-			this._nID = this._objICenter.registerGate(this);			
+	public void register() {
+		try {			
+			this._nID = this._objICenter.registerGate(this);
+			this._bIsRunning = true;
 		} catch (RemoteException e) {
 			e.printStackTrace();
 		}
 	}
 	
 	public static void main(String[] args) {		
-		Gate objGate = new Gate(-1, true);	
-		if(objGate.setCenter()) {
-			objGate.register();
-			new GateGUI(objGate).setupGUI();
-		}		
+		try {
+			Gate objGate = new Gate();
+			if(objGate.setCenter()) {
+				objGate.register();				
+				new GateGUI(objGate).setupGUI();
+			}		
+		} catch (RemoteException e) {
+			e.printStackTrace();
+		}			
 	}
 }

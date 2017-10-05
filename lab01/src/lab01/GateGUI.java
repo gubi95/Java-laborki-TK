@@ -1,6 +1,10 @@
+package lab01;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
 import java.rmi.RemoteException;
 
 import javax.swing.BorderFactory;
@@ -9,14 +13,24 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.Border;
 
+import lab01.Gate.ICallbackAction;
+
 public class GateGUI extends JFrame {
 	private JButton _btnEnter = new JButton("Wejœcie");
 	private JButton _btnExit = new JButton("Wyjœcie");
-	private JButton _btnClose = new JButton("Zamknij bramkê");
+	private JButton _btnClose = new JButton("Wy³¹cz");
 	private Gate _objGate = null;
 	
 	public GateGUI(Gate objGate) {
 		this._objGate = objGate;
+		
+		_objGate.setShutdownCallbackAction(new ICallbackAction() {			
+			@Override
+			public void doAction() {
+				_btnClose.setText(_objGate.getIsRunning() ? "Wy³¹cz" : "W³¹cz");				
+				combineTitle();
+			}
+		});
 	}
 	
 	public void setupGUI() {
@@ -35,6 +49,20 @@ public class GateGUI extends JFrame {
 		
 		Border objBorder = BorderFactory.createEmptyBorder(10, 10, 10, 10);		
 		objJPanel.setBorder(objBorder);
+		
+		this.addWindowListener(new WindowAdapter()
+		{
+		    public void windowClosing(WindowEvent e) {
+		    	if(_objGate != null) {
+		    		try {		    			
+						_objGate.shutdown();						
+					} catch (RemoteException e1) {
+						e1.printStackTrace();
+					}
+		    	}
+		    }
+		});
+		
 		
 		this.add(objJPanel);
 		this.show();
@@ -69,8 +97,19 @@ public class GateGUI extends JFrame {
 		
 		_btnClose.addActionListener(new  ActionListener() {
 			@Override
-			public void actionPerformed(ActionEvent e) {
-				_objGate.setIsRunning(false);
+			public void actionPerformed(ActionEvent e) {				
+				if(_objGate.getIsRunning()) {
+					try {
+						_objGate.shutdown();
+					} catch (RemoteException e1) {
+						e1.printStackTrace();
+					}
+				}
+				else {
+					_objGate.register();
+				}				
+								
+				_btnClose.setText(_objGate.getIsRunning() ? "Wy³¹cz" : "W³¹cz");				
 				combineTitle();
 			}
 		});
