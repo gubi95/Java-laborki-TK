@@ -27,7 +27,7 @@ public class VisitDataTableAdapter extends DefaultTableModel implements ICustomD
 
 	@Override
 	public int getColumnCount() {
-		return 4;
+		return 5;
 	}
 	
 	@Override
@@ -37,6 +37,7 @@ public class VisitDataTableAdapter extends DefaultTableModel implements ICustomD
 			case 1: return "Godzina";
 			case 2: return "Pacjent";
 			case 3: return "Lekarz";
+			case 4: return "Zakoñczona";
 		}		
 		return "";
 	}
@@ -48,6 +49,7 @@ public class VisitDataTableAdapter extends DefaultTableModel implements ICustomD
 			case 1: return VisitingHour.class;
 			case 2: return User.class;
 			case 3: return User.class;
+			case 4: return Boolean.class;
 		}	
 		return null;
 	}
@@ -65,6 +67,7 @@ public class VisitDataTableAdapter extends DefaultTableModel implements ICustomD
 			case 1: return objVisit.getVisitingHour();
 			case 2: return objVisit.getPatient();
 			case 3: return objVisit.getDoctor();
+			case 4: return objVisit.getIsFinished();
 		}		
 		return null;
 	}
@@ -88,7 +91,10 @@ public class VisitDataTableAdapter extends DefaultTableModel implements ICustomD
 		else if(columnIndex == 3) {
 			User objUserDcotor = (User) aValue;
 			objVisit.setDoctor(objUserDcotor);
-		}		
+		}	
+		else if(columnIndex == 4) {
+			objVisit.setIsFinished((boolean) aValue);
+		}
 	}
 	@Override
 	public void addTableModelListener(TableModelListener l) { }
@@ -109,6 +115,7 @@ public class VisitDataTableAdapter extends DefaultTableModel implements ICustomD
 		objVisit.setVisitingHour(objVisitingHour);
 		objVisit.setPatient(objUserPatient);
 		objVisit.setDoctor(objUserDoctor);
+		objVisit.setIsFinished(false);
 		
 		_listVisit.add(objVisit);		
 	}

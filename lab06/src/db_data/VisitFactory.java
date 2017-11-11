@@ -27,6 +27,7 @@ public class VisitFactory {
 				User objUserDoctor = new UserFactory().getByID(nDoctorID);
 				
 				objVisit.setID(objResultSet.getInt("VisitID"));
+				objVisit.setIsFinished(objResultSet.getBoolean("IsFinished"));
 				objVisit.setRoom(objRoom);
 				objVisit.setVisitingHour(objVisitingHour);
 				objVisit.setPatient(objUserPatient);
@@ -48,8 +49,8 @@ public class VisitFactory {
 			Statement objStatement = SQLManager.getConnection().createStatement();
 		 	objStatement.executeUpdate(
 		 			"INSERT INTO Visits " + 
-		 			"(RoomID,VisitingHourID,PatientID,DoctorID) " + 
-					"VALUES (" + objVisit.getRoom().getID() + "," + objVisit.getVisitingHour().getID() + "," + objVisit.getPatient().getID() + "," + objVisit.getDoctor().getID() + ")"
+		 			"(RoomID,VisitingHourID,PatientID,DoctorID,IsFinished) " + 
+					"VALUES (" + objVisit.getRoom().getID() + "," + objVisit.getVisitingHour().getID() + "," + objVisit.getPatient().getID() + "," + objVisit.getDoctor().getID() + "," + (objVisit.getIsFinished() ? "1" : "0") + ")"						
 							, Statement.RETURN_GENERATED_KEYS);
 		 	
 		 	ResultSet objResultSet = objStatement.getGeneratedKeys();
@@ -76,7 +77,8 @@ public class VisitFactory {
 									"RoomID=" + objVisit.getRoom().getID() + 
 									",VisitingHourID=" + objVisit.getVisitingHour().getID() + 
 									",PatientID=" + objVisit.getPatient().getID() + 
-									",DoctorID=" + objVisit.getDoctor().getID() +  
+									",DoctorID=" + objVisit.getDoctor().getID() +
+									",IsFinished=" + (objVisit.getIsFinished() ? "1" : "0") +
 							" WHERE VisitID = " + objVisit.getID());
 		 	SQLManager.closeConnection();
 		}

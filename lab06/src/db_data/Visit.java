@@ -6,6 +6,7 @@ public class Visit {
 	private VisitingHour _objVisitingHour;
 	private User _objUserPatient;
 	private User _objUserDoctor;
+	private boolean _bIsFinished;
 	
 	public int getID() {
 		return this._nVisitID;
@@ -27,6 +28,10 @@ public class Visit {
 		return this._objUserDoctor;
 	}
 	
+	public boolean getIsFinished() {
+		return this._bIsFinished;
+	}
+	
 	public void setID(int nID) {
 		this._nVisitID = nID;
 	}
@@ -45,5 +50,9 @@ public class Visit {
 	
 	public void setDoctor(User objUser) {
 		this._objUserDoctor = objUser;
+	}
+	
+	public void setIsFinished(boolean bIsFinished) {
+		this._bIsFinished = bIsFinished;
 	}
 }
