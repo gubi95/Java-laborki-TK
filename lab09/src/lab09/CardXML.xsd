@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<xs:schema version="1.0"
+           xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           elementFormDefault="qualified" 
+           targetNamespace="http://myprojects.net/xsd/TestScheme"
+           xmlns="http://myprojects.net/xsd/TestScheme">
+    <xs:element name="card" type="CardXML"/>
+
+    <xs:complexType name="CardXML">
+        <xs:sequence>
+            <xs:element name="greetings" type="xs:string"/>
+        </xs:sequence>
+    </xs:complexType>
+</xs:schema>

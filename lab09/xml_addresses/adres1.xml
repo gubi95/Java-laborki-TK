@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<addressXML xmlns="http://myprojects.net/xsd/TestScheme">
+    <firstname>Jan</firstname>
+    <lastname>Nowak</lastname>
+    <line1>Sezamkowa 27</line1>
+    <line2>Wrocław</line2>
+</addressXML>
